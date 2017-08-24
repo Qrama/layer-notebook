@@ -1,5 +1,5 @@
 options:
-  string-option:
+  notebook_location:
     type: string
-    default: "Default Value"
-    description: "A short description of the configuration option"
+    default: ""
+    description: "The URL where the notebook can be found to deploy on zeppelin"

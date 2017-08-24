@@ -9,5 +9,5 @@ tags:
 subordinate: true
 requires:
   zeppelin:
-    interface: juju-info
+    interface: zeppelin
     scope: container

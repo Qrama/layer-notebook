@@ -1,1 +1,2 @@
-includes: ['layer:basic']  # if you use any interfaces, add them here
+includes: ['layer:basic', 'interface:zeppelin']  # if you use any interfaces, add them here
+repo: https://github.com/Qrama/layer-notebook.git
