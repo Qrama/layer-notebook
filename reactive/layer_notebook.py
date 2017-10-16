@@ -18,25 +18,43 @@ import subprocess as sp
 import tempfile
 import requests
 import json
+import os
 
-from shutil import copyfile
 from charms.reactive import when, when_not, set_state
 from charmhelpers.core.hookenv import status_set, config, service_name
 
 @when_not('layer-notebook.installed')
-@when('zeppelin.joined')
-def install_layer_notebook(zeppelin):
+def install_layer_notebook():
     conf = config()
-    if conf['job_location']:
+    if conf['notebook_location']:
+        file = requests.post('http://127.0.0.1:9080/api/notebook', json={"name": service_name()})
+        data = file.json()
+        notebook_path = '/var/lib/zeppelin/notebook/{}/note.json'.format(data['body'])
+        if os.path.exists(notebook_path):
+            os.remove(notebook_path)
+        d = {}
+        json_data = json.dumps(d)
         tmp_dir = tempfile.mkdtemp()
-        dest_file = '{}/{}.json'.format(tmp_dir, service_name())
+        dest_file = '{}/note.json'.format(tmp_dir)
         sp.check_call(['wget', '-O', dest_file, conf['notebook_location']])
-        zeppelin.register_notebook(filename=dest_file)
+        with open(dest_file) as f:
+            jdata = json.load(f)
+            jdata['name'] = service_name()
+            jdata['id'] = data['body']
+            json_data = jdata
+        with open(notebook_path, 'w+') as note:
+            json.dump(json_data, note)
+        sp.check_call(['sudo', 'service', 'zeppelin', 'restart'])
         status_set('active', 'Notebook {} succesfully deployed'.format(service_name()))
         set_state('layer-notebook.installed')
     else:
         status_set('blocked', 'Please provide a valid url to deploy job by changing job_location config')
+#
+# @when('zeppelin.notebook.accepted')
+# def finish_install(notebook):
 
-@when('zeppelin.notebook.rejected')
-def report_rejected_notebook(zeppelin):
-    status_set('blocked', 'Zeppelin rejected our notebook')
+#
+#
+# @when('zeppelin.notebook.rejected')
+# def report_rejected_notebook(zeppelin):
+#     status_set('blocked', 'Zeppelin rejected our notebook')

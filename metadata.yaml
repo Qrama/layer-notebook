@@ -1,5 +1,5 @@
 name: notebook
-summary: Deploys a job on spark
+summary: Deploys a notebook on zeppelin
 maintainer: Sebastien Pattyn<sebastien.pattyn@tengu.io>
 description: |
   this charm needs an URL where a Zeppelin Notebook is located and will deploy
@@ -9,5 +9,5 @@ tags:
 subordinate: true
 requires:
   zeppelin:
-    interface: zeppelin
+    interface: juju-info
     scope: container
