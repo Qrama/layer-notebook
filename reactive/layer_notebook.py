@@ -23,7 +23,6 @@ import os
 
 from charms.reactive import when, when_not, set_state
 from charmhelpers.core.hookenv import status_set, config, service_name
-from charmhelpers.contrib.python.packages import pip_install
 
 @when_not('layer-notebook.installed')
 def install_layer_notebook():
