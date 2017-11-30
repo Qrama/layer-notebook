@@ -11,3 +11,4 @@ requires:
   zeppelin:
     interface: juju-info
     scope: container
+series: ['xenial']
