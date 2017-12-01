@@ -16,9 +16,11 @@
 # pylint: disable=c0111,c0103,c0301,c0412
 import subprocess as sp
 import tempfile
-import requests
 import json
 import os
+import requests
+import codecs
+
 
 from charms.reactive import when, when_not, set_state
 from charmhelpers.core.hookenv import status_set, config, service_name
@@ -29,8 +31,6 @@ def install_layer_notebook():
     if conf['notebook_location']:
         file = requests.post('http://127.0.0.1:9080/api/notebook', json={"name": service_name()})
         data = file.json()
-        sp.check_call(['pip3', 'install', 'simplejson'])
-        import simplejson
         notebook_path = '/var/lib/zeppelin/notebook/{}/note.json'.format(data['body'])
         if os.path.exists(notebook_path):
             os.remove(notebook_path)
@@ -39,11 +39,10 @@ def install_layer_notebook():
         tmp_dir = tempfile.mkdtemp()
         dest_file = '{}/note.json'.format(tmp_dir)
         sp.check_call(['wget', '-O', dest_file, conf['notebook_location']])
-        with open(dest_file) as f:
-            jdata = simplejson.load(f)
-            jdata['name'] = service_name()
-            jdata['id'] = data['body']
-            json_data = jdata
+        jdata = json.load(codecs.open(dest_file, 'r', 'utf-8-sig'))
+        jdata['name'] = service_name()
+        jdata['id'] = data['body']
+        json_data = jdata
         with open(notebook_path, 'w+') as note:
             json.dump(json_data, note)
         sp.check_call(['sudo', 'service', 'zeppelin', 'restart'])
