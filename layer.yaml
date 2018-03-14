@@ -1,2 +1,2 @@
-includes: ['layer:basic']  # if you use any interfaces, add them here
-repo: https://github.com/Qrama/layer-notebook.git
+includes: ['layer:basic', 'layer:metrics']
+repo: https://github.com/tengu-team/layer-notebook.git
